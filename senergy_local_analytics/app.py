@@ -18,8 +18,8 @@ import typing
 import jsonpath_rw_ext as jp
 import paho.mqtt.client as mqtt
 
-from lib import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config
-from lib.util import InternalJSONEncoder
+from senergy_local_analytics import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config
+from senergy_local_analytics.util import InternalJSONEncoder
 
 
 class App:

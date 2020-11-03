@@ -6,7 +6,7 @@ with open("README.md", "r") as readme_file:
 requirements = ["paho-mqtt~=1.5.1", "jsonpath-rw", "jsonpath-rw-ext"]
 
 setup(
-    name="senergy-analytics-local-lib",
+    name="senergy-local-analytics",
     version="0.0.1",
     author="CC SES",
     author_email="zsco@users.noreply.github.com",

@@ -14,5 +14,5 @@
 
 __all__ = ["Config", "Topic", "Mapping", "config_decoder", "topic_decoder", "App", "Input"]
 
-from lib.entities import *
-from lib.app import *
+from senergy_local_analytics.entities import *
+from senergy_local_analytics.app import *

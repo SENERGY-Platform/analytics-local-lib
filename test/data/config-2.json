@@ -1,0 +1,31 @@
+{
+	"imageId": "adder-local",
+	"agent": {
+		"id": "c9b86746-b30e-4a93-9ddc-df86c0faa974",
+		"updated": "0001-01-01T00:00:00Z"
+	},
+	"containerId": "730dc9d63644a8fc88d355f37b6d2553bf036fb9ace183eeb12445142dc6bc9a",
+	"inputTopics": [
+		{
+			"name": "analytics-adder-local",
+			"filterType": "OperatorId",
+			"filterValue": "1ff366e7-8a87-4c47-b869-f8920bb4988e",
+			"mappings": [
+				{
+					"dest": "value1",
+					"source": "sum"
+				},
+				{
+					"dest": "value2",
+					"source": "sum"
+				}
+			]
+		}
+	],
+	"config": {
+		"pipelineId": "ee9b1300-1d2d-4d6f-a7bf-bb6127067405",
+		"outputTopic": "analytics-adder-local",
+		"operatorId": "d26eabc6-419b-4c98-965a-66dec914746a",
+		"baseOperatorId": "5fa2880ccde9ebc8d3928e0a"
+	}
+}

@@ -50,7 +50,11 @@ class App:
 
     def config(self, inputs: list[Input]) -> None:
         for topic in self._topics:
+            if topic.filter_type == "OperatorId":
+                topic.name = "fog/analytics/"+topic.name+"/"+topic.filter_value
             for mapping in topic.mappings:
+                if topic.filter_type == "OperatorId":
+                    mapping.source = "analytics." + mapping.source
                 for inp in inputs:
                     if inp.name == mapping.dest:
                         inp.add_input_topic(InputTopic(topic.name, mapping.source))
@@ -62,7 +66,7 @@ class App:
     def send_message(self):
         payload = self._output_message
         self._client.publish("fog/analytics/" + self._config.output_topic +
-                             "/" + self._config.pipeline_id + "/" + self._config.operator_id,
+                             "/" + self._config.operator_id,
                              payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
 
     def process_message(self, func: typing.Callable[[list[Input]], None]) -> None:

@@ -64,6 +64,7 @@ class App:
         self._output_message.analytics[output_name] = value
 
     def send_message(self):
+        self._output_message.set_time_now()
         payload = self._output_message
         self._client.publish("fog/analytics/" + self._config.output_topic +
                              "/" + self._config.operator_id,

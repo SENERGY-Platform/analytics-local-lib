@@ -23,5 +23,10 @@ class TestMainMethods(unittest.TestCase):
         with open('./data/config-1.json') as json_file:
             data_in = json.load(json_file)
         config: Config = json.loads(json.dumps(data_in), object_hook=config_decoder)
-        message = OutputMessage(config.pipeline_id, config.operator_id, config.base_operator_id)
+        message = OutputMessage(config.pipeline_id, config.operator_id)
         self.assertEqual("d26eabc6-419b-4c98-965a-66dec914746a", message._operator_id)
+
+    def test_output_message(self):
+        message = OutputMessage("1", "1")
+        message.set_time_now()
+        print(message._time)

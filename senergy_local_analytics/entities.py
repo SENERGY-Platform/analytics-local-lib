@@ -76,15 +76,10 @@ class OutputMessage:
 
 
 def config_decoder(configDict):
-    for key in configDict.keys():
-        if key == "pipelineId":
-            configDict["pipeline_id"] = configDict.pop("pipelineId")
-        if key == "operatorId":
-            configDict["operator_id"] = configDict.pop("operatorId")
-        if key == "baseOperatorId":
-            configDict["base_operator_id"] = configDict.pop("baseOperatorId")
-        if key == "outputTopic":
-            configDict["output_topic"] = configDict.pop("outputTopic")
+    configDict["operator_id"] = configDict.pop("operatorId")
+    configDict["pipeline_id"] = configDict.pop("pipelineId")
+    configDict["base_operator_id"] = configDict.pop("baseOperatorId")
+    configDict["output_topic"] = configDict.pop("outputTopic")
     return namedtuple('X', configDict.keys())(*configDict.values())
 
 

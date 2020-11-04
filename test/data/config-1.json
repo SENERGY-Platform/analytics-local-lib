@@ -1,0 +1,6 @@
+{
+  "pipelineId": "219badbe-5b41-4b0a-9aa9-f26a027db81e",
+  "outputTopic": "analytics-adder-local",
+  "operatorId": "d26eabc6-419b-4c98-965a-66dec914746a",
+  "baseOperatorId": "5fa2880ccde9ebc8d3928e0a"
+}

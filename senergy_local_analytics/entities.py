@@ -72,7 +72,7 @@ class OutputMessage:
         self.analytics = {}
 
     def set_time_now(self):
-        self._time = datetime.datetime.utcnow().isoformat()
+        self._time = '{}Z'.format(datetime.datetime.utcnow().isoformat())
 
 
 def config_decoder(configDict):

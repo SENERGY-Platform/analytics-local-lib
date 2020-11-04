@@ -16,8 +16,9 @@ from collections import namedtuple
 
 
 class Config:
-    def __init__(self, pipeline_id, output_topic, operator_id):
-        self.pipeline_id, self.output_topic, self.operator_id = pipeline_id, output_topic, operator_id
+    def __init__(self, pipeline_id, output_topic, operator_id, base_operator_id):
+        self.pipeline_id, self.output_topic, self.operator_id, self.base_operator_id = \
+            pipeline_id, output_topic, operator_id, base_operator_id
 
 
 class Topic:
@@ -63,10 +64,11 @@ class Input:
 class OutputMessage:
     _pipeline_id = None
     _operator_id = None
+    _base_operator_id = None
     _time = None
 
-    def __init__(self, pipeline_id, operator_id):
-        self._pipeline_id, self._operator_id = pipeline_id, operator_id
+    def __init__(self, pipeline_id, operator_id, base_operator_id):
+        self._pipeline_id, self._operator_id, self._base_operator_id = pipeline_id, operator_id, base_operator_id
         self.analytics = {}
 
     def set_time_now(self):
@@ -79,6 +81,8 @@ def config_decoder(configDict):
             configDict["pipeline_id"] = configDict.pop("pipelineId")
         if key == "operatorId":
             configDict["operator_id"] = configDict.pop("operatorId")
+        if key == "baseOperatorId":
+            configDict["base_operator_id"] = configDict.pop("baseOperatorId")
         if key == "outputTopic":
             configDict["output_topic"] = configDict.pop("outputTopic")
     return namedtuple('X', configDict.keys())(*configDict.values())

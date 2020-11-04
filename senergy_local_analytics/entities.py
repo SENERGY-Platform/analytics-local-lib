@@ -67,8 +67,8 @@ class OutputMessage:
     _base_operator_id = None
     _time = None
 
-    def __init__(self, pipeline_id, operator_id, base_operator_id):
-        self._pipeline_id, self._operator_id, self._base_operator_id = pipeline_id, operator_id, base_operator_id
+    def __init__(self, pipeline_id, operator_id):
+        self._pipeline_id, self._operator_id = pipeline_id, operator_id
         self.analytics = {}
 
     def set_time_now(self):

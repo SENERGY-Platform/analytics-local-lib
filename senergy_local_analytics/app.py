@@ -40,7 +40,7 @@ class App:
             with open('config.json') as json_file:
                 data = json.load(json_file)
                 self._topics = json.loads(json.dumps(data["inputTopics"]), object_hook=topic_decoder)
-        self._output_message = OutputMessage(self._config.pipeline_id, self._config.operator_id, self._config.base_operator_id)
+        self._output_message = OutputMessage(self._config.pipeline_id, self._config.operator_id)
         self._client.on_connect = self.__on_connect
         self._client.on_message = self.__on_message
 

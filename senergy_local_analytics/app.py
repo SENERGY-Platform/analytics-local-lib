@@ -61,7 +61,7 @@ class App:
 
     def send_message(self):
         payload = self._output_message
-        self._client.publish("analytics/" + self._config.output_topic +
+        self._client.publish("fog/analytics/" + self._config.output_topic +
                              "/" + self._config.pipeline_id + "/" + self._config.operator_id,
                              payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
 

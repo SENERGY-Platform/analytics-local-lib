@@ -50,10 +50,6 @@ class App:
 
     def config(self, inputs: list[Input]) -> None:
         for topic in self._topics:
-            if topic.filter_type == "OperatorId":
-                topic_name = "fog/analytics/"+topic.name+"/"+topic.filter_value
-            else:
-                topic_name = topic.name
             for mapping in topic.mappings:
                 if topic.filter_type == "OperatorId":
                     source = "analytics." + mapping.source
@@ -61,7 +57,7 @@ class App:
                     source = mapping.source
                 for inp in inputs:
                     if inp.name == mapping.dest:
-                        inp.add_input_topic(InputTopic(topic_name, source))
+                        inp.add_input_topic(InputTopic(self.__check_topic_name(topic.name), source))
         self._inputs = inputs
 
     def set_output(self, output_name, value):
@@ -80,7 +76,7 @@ class App:
         print("Connected with result code " + str(rc), flush=True)
         tops = []
         for topicConfig in self._topics:
-            tops.append((topicConfig.name, 0))
+            tops.append((self.__check_topic_name(topicConfig.name), 0))
             print(topicConfig, flush=True)
         client.subscribe(tops)
 
@@ -95,3 +91,11 @@ class App:
 
         if callable(self._process_message):
             self._process_message(self._inputs)
+
+
+    def __check_topic_name(self, topic_config) -> str:
+        if topic_config.filter_type == "OperatorId":
+            topic_name = "fog/analytics/" + topic_config.name + "/" + topic_config.filter_value
+        else:
+            topic_name = topic_config.name
+        return topic_name

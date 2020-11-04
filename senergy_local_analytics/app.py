@@ -69,11 +69,11 @@ class App:
         self._process_message = func
 
     def __on_connect(self, client, userdata, flags, rc):
-        print("Connected with result code " + str(rc))
+        print("Connected with result code " + str(rc), flush=True)
         tops = []
         for topicConfig in self._topics:
             tops.append((topicConfig.name, 0))
-            print(topicConfig)
+            print(topicConfig, flush=True)
         client.subscribe(tops)
 
     def __on_message(self, client, userdata, msg: mqtt.MQTTMessage):

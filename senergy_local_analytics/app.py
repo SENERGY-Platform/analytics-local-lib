@@ -51,13 +51,17 @@ class App:
     def config(self, inputs: list[Input]) -> None:
         for topic in self._topics:
             if topic.filter_type == "OperatorId":
-                topic.name = topic.name._replace("fog/analytics/"+topic.name+"/"+topic.filter_value)
+                topic_name = "fog/analytics/"+topic.name+"/"+topic.filter_value
+            else:
+                topic_name = topic.name
             for mapping in topic.mappings:
                 if topic.filter_type == "OperatorId":
-                    mapping.source = mapping.source._replace("analytics." + mapping.source)
+                    source = "analytics." + mapping.source
+                else:
+                    source = mapping.source
                 for inp in inputs:
                     if inp.name == mapping.dest:
-                        inp.add_input_topic(InputTopic(topic.name, mapping.source))
+                        inp.add_input_topic(InputTopic(topic_name, source))
         self._inputs = inputs
 
     def set_output(self, output_name, value):

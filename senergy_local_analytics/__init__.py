@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-__all__ = ["Config", "Topic", "Mapping", "config_decoder", "topic_decoder", "App", "Input"]
+__all__ = ["Config", "Topic", "Mapping", "config_decoder", "topic_decoder", "App", "Input", "Output"]
 
 from senergy_local_analytics.entities import *
 from senergy_local_analytics.app import *

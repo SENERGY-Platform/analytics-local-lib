@@ -14,7 +14,7 @@
 import json
 import unittest
 
-from senergy_local_analytics import Config, config_decoder, OutputMessage
+from senergy_local_analytics import Config, config_decoder, OutputMessage, App
 
 
 class TestMainMethods(unittest.TestCase):
@@ -26,7 +26,7 @@ class TestMainMethods(unittest.TestCase):
         message = OutputMessage(config.pipeline_id, config.operator_id)
         self.assertEqual("d26eabc6-419b-4c98-965a-66dec914746a", message._operator_id)
 
-    def test_output_message(self):
+    def test_output_message_set_time(self):
         message = OutputMessage("1", "1")
         message.set_time_now()
-        print(message._time)
+        self.assertTrue(len(message._time) > 0)

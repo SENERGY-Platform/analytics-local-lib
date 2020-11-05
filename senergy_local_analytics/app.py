@@ -18,7 +18,7 @@ import typing
 import jsonpath_rw_ext as jp
 import paho.mqtt.client as mqtt
 
-from senergy_local_analytics import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config
+from senergy_local_analytics import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config, Output
 from senergy_local_analytics.util import InternalJSONEncoder
 
 
@@ -26,18 +26,18 @@ class App:
     _inputs = [None]
     _process_message = None
 
-    def __init__(self):
+    def __init__(self, config_path='config.json'):
         self._client = mqtt.Client()
         if os.getenv("CONFIG") is not None:
             self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
         else:
-            with open('config.json') as json_file:
+            with open(config_path) as json_file:
                 data = json.load(json_file)
                 self._config: Config = json.loads(json.dumps(data["config"]), object_hook=config_decoder)
         if os.getenv("INPUT") is not None:
             self._topics = json.loads(os.getenv("INPUT"), object_hook=topic_decoder)
         else:
-            with open('config.json') as json_file:
+            with open(config_path) as json_file:
                 data = json.load(json_file)
                 self._topics = json.loads(json.dumps(data["inputTopics"]), object_hook=topic_decoder)
         self._output_message = OutputMessage(self._config.pipeline_id, self._config.operator_id)
@@ -60,17 +60,7 @@ class App:
                         inp.add_input_topic(InputTopic(self.__check_topic_name(topic), source))
         self._inputs = inputs
 
-    def set_output(self, output_name, value):
-        self._output_message.analytics[output_name] = value
-
-    def send_message(self):
-        self._output_message.set_time_now()
-        payload = self._output_message
-        self._client.publish("fog/analytics/" + self._config.output_topic +
-                             "/" + self._config.operator_id,
-                             payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
-
-    def process_message(self, func: typing.Callable[[list[Input]], None]) -> None:
+    def process_message(self, func: typing.Callable[[list[Input]], Output]) -> None:
         self._process_message = func
 
     def __on_connect(self, client, userdata, flags, rc):
@@ -89,10 +79,25 @@ class App:
                 inp.current_topic = topic.topic_name
                 inp.current_source = topic.source
                 inp.current_value = jp.match1("$." + topic.source, json.loads(message))
+        self.__actually_process_message()
 
+    def __actually_process_message(self):
         if callable(self._process_message):
-            self._process_message(self._inputs)
+            output = self._process_message(self._inputs)
+            for output_name, value in output.values.items():
+                self.__set_output(output_name, value)
+            if output.send:
+                self.__send_message()
 
+    def __send_message(self):
+        self._output_message.set_time_now()
+        payload = self._output_message
+        self._client.publish("fog/analytics/" + self._config.output_topic +
+                             "/" + self._config.operator_id,
+                             payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
+
+    def __set_output(self, output_name, value):
+        self._output_message.analytics[output_name] = value
 
     def __check_topic_name(self, topic_config) -> str:
         if topic_config.filter_type == "OperatorId":

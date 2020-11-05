@@ -14,7 +14,7 @@
 import json
 import unittest
 
-from senergy_local_analytics import Config, config_decoder, OutputMessage, App
+from senergy_local_analytics import Config, config_decoder, OutputMessage, App, Input, Output
 
 
 class TestMainMethods(unittest.TestCase):
@@ -30,3 +30,12 @@ class TestMainMethods(unittest.TestCase):
         message = OutputMessage("1", "1")
         message.set_time_now()
         self.assertTrue(len(message._time) > 0)
+
+    def test_set_output(self):
+        app = App('./data/config-2.json')
+        app.process_message(self.__process)
+        app._App__actually_process_message()
+        self.assertEqual({'sum': 3}, app._output_message.analytics)
+
+    def __process(self, inputs: list[Input]):
+        return Output(False, {"sum": 3})

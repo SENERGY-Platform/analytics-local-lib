@@ -61,6 +61,11 @@ class Input:
         return len(self._input_topics)
 
 
+class Output:
+    def __init__(self, send: bool, values: dict):
+        self.send, self.values = send, values
+
+
 class OutputMessage:
     _pipeline_id = None
     _operator_id = None

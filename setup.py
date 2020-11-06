@@ -7,7 +7,7 @@ requirements = ["paho-mqtt~=1.5.1", "jsonpath-rw", "jsonpath-rw-ext"]
 
 setup(
     name="senergy-local-analytics",
-    version="0.0.1",
+    version="0.0.2",
     author="CC SES",
     author_email="zsco@users.noreply.github.com",
     description="A package to enable local analytics",

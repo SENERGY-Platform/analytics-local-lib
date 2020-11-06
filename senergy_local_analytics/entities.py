@@ -81,10 +81,12 @@ class OutputMessage:
 
 
 def config_decoder(configDict):
-    configDict["operator_id"] = configDict.pop("operatorId")
-    configDict["pipeline_id"] = configDict.pop("pipelineId")
-    configDict["base_operator_id"] = configDict.pop("baseOperatorId")
-    configDict["output_topic"] = configDict.pop("outputTopic")
+    if "operatorId" in configDict:
+        configDict["operator_id"] = configDict.pop("operatorId")
+    if "pipelineId" in configDict:
+        configDict["pipeline_id"] = configDict.pop("pipelineId")
+    if "outputTopic" in configDict:
+        configDict["output_topic"] = configDict.pop("outputTopic")
     return namedtuple('X', configDict.keys())(*configDict.values())
 
 

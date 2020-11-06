@@ -90,9 +90,8 @@ def config_decoder(configDict):
 
 
 def topic_decoder(topicDict):
-    for key in topicDict.keys():
-        if key == "filterType":
-            topicDict["filter_type"] = topicDict.pop("filterType")
-        if key == "filterValue":
-            topicDict["filter_value"] = topicDict.pop("filterValue")
+    if "filterType" in topicDict:
+        topicDict["filter_type"] = topicDict.pop("filterType")
+    if "filterValue" in topicDict:
+        topicDict["filter_value"] = topicDict.pop("filterValue")
     return namedtuple('X', topicDict.keys())(*topicDict.values())

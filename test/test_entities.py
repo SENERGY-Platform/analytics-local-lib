@@ -13,8 +13,7 @@
 #  limitations under the License.
 import json
 import unittest
-
-from senergy_local_analytics import Config, config_decoder, OutputMessage, App, Input, Output
+from senergy_local_analytics import Config, config_decoder, OutputMessage, App, Input, Output, InputTopic, topic_decoder
 
 
 class TestMainMethods(unittest.TestCase):
@@ -25,6 +24,12 @@ class TestMainMethods(unittest.TestCase):
         config: Config = json.loads(json.dumps(data_in), object_hook=config_decoder)
         message = OutputMessage(config.pipeline_id, config.operator_id)
         self.assertEqual("d26eabc6-419b-4c98-965a-66dec914746a", message._operator_id)
+
+    def test_topic_decoder(self):
+        with open('./data/config-3.json') as json_file:
+            data_in = json.load(json_file)
+        topic: InputTopic = json.loads(json.dumps(data_in), object_hook=topic_decoder)
+        self.assertRaises(AttributeError, getattr, topic, "topic_name")
 
     def test_output_message_set_time(self):
         message = OutputMessage("1", "1")

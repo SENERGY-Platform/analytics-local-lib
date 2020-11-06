@@ -1,0 +1,11 @@
+{
+  "filterType": "DeviceId",
+  "mappings": [
+    {
+      "dest": "value1"
+    },
+    {
+      "dest": "value2"
+    }
+  ]
+}

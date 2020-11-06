@@ -69,7 +69,6 @@ class Output:
 class OutputMessage:
     _pipeline_id = None
     _operator_id = None
-    _base_operator_id = None
     _time = None
 
     def __init__(self, pipeline_id, operator_id):

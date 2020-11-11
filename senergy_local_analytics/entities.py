@@ -14,6 +14,8 @@
 import datetime
 from collections import namedtuple
 
+from typing import List
+
 
 class Config:
     def __init__(self, pipeline_id, output_topic, operator_id, base_operator_id):
@@ -42,7 +44,7 @@ class Input:
         self.current_topic = None
         self.current_source = None
         self.name = name
-        self._input_topics: list[InputTopic] = []
+        self._input_topics: List[InputTopic] = []
 
     def add_input_topic(self, input_topic: InputTopic):
         self._input_topics.append(input_topic)
@@ -50,8 +52,8 @@ class Input:
     def get_input_topics(self):
         return self._input_topics
 
-    def get_input_topics_by_name(self, topic_name: str) -> list[InputTopic]:
-        return_topics: list[InputTopic] = []
+    def get_input_topics_by_name(self, topic_name: str) -> List[InputTopic]:
+        return_topics: List[InputTopic] = []
         for topic in self._input_topics:
             if topic.topic_name == topic_name:
                 return_topics.append(topic)

@@ -17,6 +17,6 @@ setup(
     packages=find_packages(),
     install_requires=requirements,
     classifiers=[
-        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.7",
     ],
 )

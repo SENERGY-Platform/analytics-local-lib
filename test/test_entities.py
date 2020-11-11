@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import json
+import typing
 import unittest
 from senergy_local_analytics import Config, config_decoder, OutputMessage, App, Input, Output, InputTopic, topic_decoder
 
@@ -48,5 +49,5 @@ class TestMainMethods(unittest.TestCase):
         input2 = Input("timestamp")
         app.config([input1, input2])
 
-    def __process(self, inputs: list[Input]):
+    def __process(self, inputs: typing.List[Input]):
         return Output(False, {"sum": 3})

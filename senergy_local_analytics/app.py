@@ -48,7 +48,7 @@ class App:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)
         self._client.loop_forever()
 
-    def config(self, inputs: list[Input]) -> None:
+    def config(self, inputs: typing.List[Input]) -> None:
         for topic in self._topics:
             for mapping in topic.mappings:
                 if hasattr(mapping, 'source'):
@@ -61,7 +61,7 @@ class App:
                             inp.add_input_topic(InputTopic(self.__check_topic_name(topic), source))
         self._inputs = inputs
 
-    def process_message(self, func: typing.Callable[[list[Input]], Output]) -> None:
+    def process_message(self, func: typing.Callable[[typing.List[Input]], Output]) -> None:
         self._process_message = func
 
     def __on_connect(self, client, userdata, flags, rc):

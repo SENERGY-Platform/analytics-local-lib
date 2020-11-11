@@ -50,12 +50,14 @@ class App:
 
     def config(self, inputs: typing.List[Input]) -> None:
         for topic in self._topics:
-            for mapping in topic.mappings:
-                if hasattr(mapping, 'source'):
-                    if topic.filter_type == "OperatorId":
-                        source = "analytics." + mapping.source
-                    else:
-                        source = mapping.source
+            if hasattr(topic, 'name'):
+                for mapping in topic.mappings:
+                    source = "no_source_given"
+                    if hasattr(mapping, 'source'):
+                        if topic.filter_type == "OperatorId":
+                            source = "analytics." + mapping.source
+                        else:
+                            source = mapping.source
                     for inp in inputs:
                         if inp.name == mapping.dest:
                             inp.add_input_topic(InputTopic(self.__check_topic_name(topic), source))

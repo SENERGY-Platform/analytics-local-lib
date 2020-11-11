@@ -42,5 +42,11 @@ class TestMainMethods(unittest.TestCase):
         app._App__actually_process_message()
         self.assertEqual({'sum': 3}, app._output_message.analytics)
 
+    def test_config(self):
+        app = App('./data/config-4.json')
+        input1 = Input("value")
+        input2 = Input("timestamp")
+        app.config([input1, input2])
+
     def __process(self, inputs: list[Input]):
         return Output(False, {"sum": 3})

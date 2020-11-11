@@ -51,13 +51,14 @@ class App:
     def config(self, inputs: list[Input]) -> None:
         for topic in self._topics:
             for mapping in topic.mappings:
-                if topic.filter_type == "OperatorId":
-                    source = "analytics." + mapping.source
-                else:
-                    source = mapping.source
-                for inp in inputs:
-                    if inp.name == mapping.dest:
-                        inp.add_input_topic(InputTopic(self.__check_topic_name(topic), source))
+                if hasattr(mapping, 'source'):
+                    if topic.filter_type == "OperatorId":
+                        source = "analytics." + mapping.source
+                    else:
+                        source = mapping.source
+                    for inp in inputs:
+                        if inp.name == mapping.dest:
+                            inp.add_input_topic(InputTopic(self.__check_topic_name(topic), source))
         self._inputs = inputs
 
     def process_message(self, func: typing.Callable[[list[Input]], Output]) -> None:

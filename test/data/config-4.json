@@ -1,0 +1,29 @@
+{
+  "inputTopics": [
+    {
+      "name": "analytics-adder-local",
+      "filterType": "OperatorId",
+      "filterValue": "e7505748-c631-409a-a9e5-b7739cc6d84a",
+      "mappings": [
+        {
+          "dest": "value",
+          "source": "sum"
+        }
+      ]
+    },
+    {
+      "filterType": "DeviceId",
+      "mappings": [
+        {
+          "dest": "timestamp"
+        }
+      ]
+    }
+  ],
+  "config": {
+    "pipelineId": "7011b077-ad83-46ac-8a11-e7231ea64578",
+    "outputTopic": "estimator-local",
+    "operatorId": "31749e53-7b8d-4377-8da9-2c91edfaf472",
+    "baseOperatorId": "5fabbecda418ca6e7c241f87"
+  }
+}

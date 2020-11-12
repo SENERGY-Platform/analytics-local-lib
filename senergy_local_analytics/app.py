@@ -60,7 +60,7 @@ class App:
                             source = mapping.source
                     for inp in inputs:
                         if inp.name == mapping.dest:
-                            inp.add_input_topic(InputTopic(self.__check_topic_name(topic), source))
+                            inp.add_input_topic(InputTopic(topic.name, source))
         self._inputs = inputs
 
     def process_message(self, func: typing.Callable[[typing.List[Input]], Output]) -> None:

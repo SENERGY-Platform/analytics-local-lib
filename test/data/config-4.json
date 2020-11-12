@@ -1,9 +1,10 @@
 {
+  "imageId": "smartenergyplatform/analytics-operator-local-estimator:slim",
   "inputTopics": [
     {
-      "name": "analytics-adder-local",
+      "name": "fog/analytics/adder-local/ed0006ea-6d2c-46b6-b073-831a5f020eee",
       "filterType": "OperatorId",
-      "filterValue": "e7505748-c631-409a-a9e5-b7739cc6d84a",
+      "filterValue": "ed0006ea-6d2c-46b6-b073-831a5f020eee",
       "mappings": [
         {
           "dest": "value",
@@ -12,18 +13,20 @@
       ]
     },
     {
+      "name": "fog/analytics/adder-local/ed0006ea-6d2c-46b6-b073-831a5f020eee",
       "filterType": "DeviceId",
       "mappings": [
         {
-          "dest": "timestamp"
+          "dest": "timestamp",
+          "source": "time"
         }
       ]
     }
   ],
   "config": {
-    "pipelineId": "7011b077-ad83-46ac-8a11-e7231ea64578",
+    "pipelineId": "2e9a31fb-3fed-4d26-94eb-a689ba0a9ea1",
     "outputTopic": "estimator-local",
-    "operatorId": "31749e53-7b8d-4377-8da9-2c91edfaf472",
-    "baseOperatorId": "5fabbecda418ca6e7c241f87"
+    "operatorId": "4b234675-be73-4f36-9b32-8ae49f35ea54",
+    "baseOperatorId": "5fad0035cde9ebc8d3928e0b"
   }
 }

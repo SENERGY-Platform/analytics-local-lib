@@ -69,20 +69,23 @@ class App:
     def __on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc), flush=True)
         tops = []
-        for topicConfig in self._topics:
-            tops.append((self.__check_topic_name(topicConfig), 0))
-            print(topicConfig, flush=True)
+        for topic_config in self._topics:
+            tops.append((topic_config.name, 0))
+            print(topic_config, flush=True)
         client.subscribe(tops)
 
     def __on_message(self, client, userdata, msg: mqtt.MQTTMessage):
         message = msg.payload.decode('utf8').replace('"{', '{').replace('}"', '}').replace('\\', '')
+        self.__get_input_values(message, msg.topic)
+        self.__actually_process_message()
+
+    def __get_input_values(self, message, topic_name: str):
         for inp in self._inputs:
-            return_topics = inp.get_input_topics_by_name(msg.topic)
+            return_topics = inp.get_input_topics_by_name(topic_name)
             for topic in return_topics:
                 inp.current_topic = topic.topic_name
                 inp.current_source = topic.source
                 inp.current_value = jp.match1("$." + topic.source, json.loads(message))
-        self.__actually_process_message()
 
     def __actually_process_message(self):
         if callable(self._process_message):
@@ -101,10 +104,3 @@ class App:
 
     def __set_output(self, output_name, value):
         self._output_message.analytics[output_name] = value
-
-    def __check_topic_name(self, topic_config) -> str:
-        if topic_config.filter_type == "OperatorId":
-            topic_name = "fog/analytics/" + topic_config.name + "/" + topic_config.filter_value
-        else:
-            topic_name = topic_config.name
-        return topic_name

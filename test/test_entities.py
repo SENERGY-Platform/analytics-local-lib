@@ -44,10 +44,15 @@ class TestMainMethods(unittest.TestCase):
         self.assertEqual({'sum': 3}, app._output_message.analytics)
 
     def test_config(self):
+        with open('./data/message-4.json') as json_file:
+            data = json.load(json_file)
         app = App('./data/config-4.json')
         input1 = Input("value")
         input2 = Input("timestamp")
         app.config([input1, input2])
+        app._App__get_input_values(json.dumps(data), "fog/analytics/adder-local/ed0006ea-6d2c-46b6-b073-831a5f020eee")
+        self.assertEqual(258.86504096941195, app._inputs[0].current_value)
+        self.assertEqual("2020-11-12T09:48:45.307244Z", app._inputs[1].current_value)
 
     def __process(self, inputs: typing.List[Input]):
         return Output(False, {"sum": 3})

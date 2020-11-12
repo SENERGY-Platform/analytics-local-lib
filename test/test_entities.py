@@ -54,5 +54,13 @@ class TestMainMethods(unittest.TestCase):
         self.assertEqual(258.86504096941195, app._inputs[0].current_value)
         self.assertEqual("2020-11-12T09:48:45.307244Z", app._inputs[1].current_value)
 
+    def test_incomplete_config(self):
+        app = App('./data/config-5.json')
+        input1 = Input("value")
+        input2 = Input("timestamp")
+        app.config([input1, input2])
+        tops = app._App__create_topic_subscription_list()
+        self.assertEqual(1, len(tops))
+
     def __process(self, inputs: typing.List[Input]):
         return Output(False, {"sum": 3})

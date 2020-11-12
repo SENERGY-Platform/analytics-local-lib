@@ -68,11 +68,15 @@ class App:
 
     def __on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc), flush=True)
+        client.subscribe(self.__create_topic_subscription_list())
+
+    def __create_topic_subscription_list(self):
         tops = []
         for topic_config in self._topics:
-            tops.append((topic_config.name, 0))
-            print(topic_config, flush=True)
-        client.subscribe(tops)
+            if hasattr(topic_config, 'name'):
+                tops.append((topic_config.name, 0))
+                print(topic_config, flush=True)
+        return tops
 
     def __on_message(self, client, userdata, msg: mqtt.MQTTMessage):
         message = msg.payload.decode('utf8').replace('"{', '{').replace('}"', '}').replace('\\', '')

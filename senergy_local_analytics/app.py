@@ -103,7 +103,7 @@ class App:
         self._output_message.set_time_now()
         payload = self._output_message
         self._client.publish("fog/analytics/" + self._config.output_topic +
-                             "/" + self._config.operator_id,
+                             "/" + self._config.operator_id + "/" + self._config.pipeline_id,
                              payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
 
     def __set_output(self, output_name, value):

@@ -14,6 +14,7 @@
 import json
 import os
 import queue
+import threading
 import typing
 
 import jsonpath_rw_ext as jp
@@ -31,6 +32,7 @@ class App:
 
     def __init__(self, config_path='config.json'):
         self.__msg_queue = queue.Queue()
+        self.__loop_thread = None
         self._client = mqtt.Client()
         if os.getenv("CONFIG") is not None:
             self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
@@ -50,7 +52,8 @@ class App:
 
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)
-        self._client.loop_start()
+        self.__loop_thread = threading.Thread(target=self._client.loop_start, name="mqtt-loop", daemon=True)
+        self.__loop_thread.start()
         worker = Worker(self.__msg_queue, target=self.__parse_and_process_message)
         worker.start()
 

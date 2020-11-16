@@ -39,11 +39,11 @@ class InputTopic:
 
 
 class Message:
-    def __init__(self, topic: str, message: str):
+    def __init__(self, topic: str, message:  b""):
         self.__topic, self.__message = topic, message
 
     def get_message(self):
-        return self.__message
+        return self.__message.decode('utf8').replace('"{', '{').replace('}"', '}').replace('\\', '')
 
     def get_topic(self):
         return self.__topic

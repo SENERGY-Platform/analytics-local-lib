@@ -15,6 +15,7 @@ import json
 import os
 import queue
 import typing
+import uuid
 from concurrent.futures.thread import ThreadPoolExecutor
 from time import sleep
 
@@ -33,7 +34,7 @@ class App:
 
     def __init__(self, config_path='config.json'):
         self.__msg_queue = queue.Queue()
-        self._client = mqtt.Client()
+        self._client = mqtt.Client(client_id=str(uuid.UUID))
         if os.getenv("CONFIG") is not None:
             self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
         else:

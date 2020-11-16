@@ -55,11 +55,9 @@ class App:
         self._client.loop_start()
         with ThreadPoolExecutor(max_workers=6) as executor:
             while True:
-                while not self.__msg_queue.empty():
-                    message: Message = self.__msg_queue.get()
-                    future = executor.submit(self.__parse_and_process_message, message)
-                    future.result()
-                sleep(0.1)
+                message: Message = self.__msg_queue.get()
+                future = executor.submit(self.__parse_and_process_message, message)
+                future.result()
 
     def __parse_and_process_message(self, message: Message):
         self.__get_input_values(message.get_message(), message.get_topic())

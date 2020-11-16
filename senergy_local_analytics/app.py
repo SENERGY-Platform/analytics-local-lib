@@ -14,8 +14,9 @@
 import json
 import os
 import queue
-import threading
 import typing
+from concurrent.futures.thread import ThreadPoolExecutor
+from time import sleep
 
 import jsonpath_rw_ext as jp
 import paho.mqtt.client as mqtt
@@ -32,7 +33,6 @@ class App:
 
     def __init__(self, config_path='config.json'):
         self.__msg_queue = queue.Queue()
-        self.__loop_thread = None
         self._client = mqtt.Client()
         if os.getenv("CONFIG") is not None:
             self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
@@ -52,10 +52,14 @@ class App:
 
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)
-        self.__loop_thread = threading.Thread(target=self._client.loop_start, name="mqtt-loop", daemon=True)
-        self.__loop_thread.start()
-        worker = Worker(self.__msg_queue, target=self.__parse_and_process_message)
-        worker.start()
+        self._client.loop_start()
+        with ThreadPoolExecutor(max_workers=6) as executor:
+            while True:
+                while not self.__msg_queue.empty():
+                    message: Message = self.__msg_queue.get()
+                    future = executor.submit(self.__parse_and_process_message, message)
+                    future.result()
+                sleep(0.1)
 
     def __parse_and_process_message(self, message: Message):
         self.__get_input_values(message.get_message(), message.get_topic())
@@ -77,7 +81,8 @@ class App:
         self._inputs = inputs
 
     def process_message(self, func: typing.Callable[[typing.List[Input]], Output]) -> None:
-        self._process_message = func
+        if callable(func):
+            self._process_message = func
 
     def __on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc), flush=True)
@@ -103,12 +108,11 @@ class App:
                 inp.current_value = jp.match1("$." + topic.source, json.loads(message))
 
     def __actually_process_message(self):
-        if callable(self._process_message):
-            output = self._process_message(self._inputs)
-            for output_name, value in output.values.items():
-                self.__set_output(output_name, value)
-            if output.send:
-                self.__send_message()
+        output = self._process_message(self._inputs)
+        for output_name, value in output.values.items():
+            self._output_message.set_output(output_name, value)
+        if output.send:
+            self.__send_message()
 
     def __send_message(self):
         self._output_message.set_time_now()
@@ -116,6 +120,3 @@ class App:
         self._client.publish("fog/analytics/" + self._config.output_topic +
                              "/" + self._config.operator_id + "/" + self._config.pipeline_id,
                              payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
-
-    def __set_output(self, output_name, value):
-        self._output_message.analytics[output_name] = value

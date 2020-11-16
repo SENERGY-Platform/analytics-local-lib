@@ -88,6 +88,9 @@ class OutputMessage:
         self._pipeline_id, self._operator_id = pipeline_id, operator_id
         self.analytics = {}
 
+    def set_output(self, output_name, value):
+        self.analytics[output_name] = value
+
     def set_time_now(self):
         self._time = '{}Z'.format(datetime.datetime.utcnow().isoformat())
 

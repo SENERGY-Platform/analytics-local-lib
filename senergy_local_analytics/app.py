@@ -13,12 +13,15 @@
 #  limitations under the License.
 import json
 import os
+import queue
 import typing
+from time import sleep
 
 import jsonpath_rw_ext as jp
 import paho.mqtt.client as mqtt
 
-from senergy_local_analytics import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config, Output
+from senergy_local_analytics import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config, Output, \
+    Message
 from senergy_local_analytics.util import InternalJSONEncoder
 
 
@@ -27,6 +30,7 @@ class App:
     _process_message = None
 
     def __init__(self, config_path='config.json'):
+        self.__cmd_queue = queue.Queue()
         self._client = mqtt.Client()
         if os.getenv("CONFIG") is not None:
             self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
@@ -46,7 +50,13 @@ class App:
 
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)
-        self._client.loop_forever()
+        self._client.loop_start()
+        while True:
+            while not self.__cmd_queue.empty():
+                message: Message = self.__cmd_queue.get(block=True)
+                self.__get_input_values(message.get_message(), message.get_topic())
+                self.__actually_process_message()
+            sleep(1)
 
     def config(self, inputs: typing.List[Input]) -> None:
         for topic in self._topics:
@@ -80,8 +90,7 @@ class App:
 
     def __on_message(self, client, userdata, msg: mqtt.MQTTMessage):
         message = msg.payload.decode('utf8').replace('"{', '{').replace('}"', '}').replace('\\', '')
-        self.__get_input_values(message, msg.topic)
-        self.__actually_process_message()
+        self.__cmd_queue.put_nowait(Message(msg.topic, message))
 
     def __get_input_values(self, message, topic_name: str):
         for inp in self._inputs:

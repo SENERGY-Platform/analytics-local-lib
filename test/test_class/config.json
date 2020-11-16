@@ -1,0 +1,38 @@
+{
+	"imageId": "smartenergyplatform/analytics-operator-local-adder:latest",
+	"agent": {
+		"id": "c9b86746-b30e-4a93-9ddc-df86c0faa974",
+		"updated": "0001-01-01T00:00:00Z"
+	},
+	"containerId": "c25e2c502cf4fda65d07772861d39730997ce5f9c1c2bd777f04880552d506e8",
+	"inputTopics": [
+		{
+			"name": "event/qM7HdoThKwawa7fkakJTNg-1244648/getMeasurements",
+			"filterType": "DeviceId",
+			"mappings": [
+				{
+					"source": "OBIS_1_8_0.value",
+					"dest": "value1"
+				}
+			]
+		},
+		{
+			"name": "event/aM7HdoThKwawa7fkakJTNg-1244647/getMeasurements",
+			"filterType": "DeviceId",
+			"mappings": [
+				{
+					"source": "OBIS_1_8_0.value",
+					"dest": "value2"
+				}
+			]
+		}
+	],
+	"config": {
+		"pipelineId": "ce9315c1-9d83-4a49-9c35-3b2cf44a49dc",
+		"outputTopic": "adder-local",
+		"operatorId": "38d25ac8-7630-4de3-b56b-5fe68f3c1c06",
+		"baseOperatorId": "5fa2880ccde9ebc8d3928e0a"
+	},
+	"response": "OK",
+	"responseMessage": "All good"
+}

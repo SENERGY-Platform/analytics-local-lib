@@ -38,6 +38,17 @@ class InputTopic:
         self.topic_name, self.source = topic_name, source
 
 
+class Message:
+    def __init__(self, topic: str, message: str):
+        self.__topic, self.__message = topic, message
+
+    def get_message(self):
+        return self.__message
+
+    def get_topic(self):
+        return self.__topic
+
+
 class Input:
     def __init__(self, name):
         self.current_value = None

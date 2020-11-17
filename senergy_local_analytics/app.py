@@ -31,7 +31,7 @@ class App:
 
     def __init__(self, config_path='config.json'):
         self.__msg_queue = queue.Queue()
-        self._client = mqtt.Client(client_id=str(uuid.UUID))
+        self._client = mqtt.Client()
         if os.getenv("CONFIG") is not None:
             self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
         else:

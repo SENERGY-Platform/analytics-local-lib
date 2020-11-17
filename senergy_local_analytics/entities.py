@@ -35,7 +35,7 @@ class Mapping:
 
 class InputTopic:
     def __init__(self, topic_name: str, source: str):
-        self.topic_name, self.source = topic_name, source
+        self.topic_name, self.source, self.source_array = topic_name, source, source.split(".")
 
 
 class Message:

@@ -101,9 +101,8 @@ class App:
             for topic in return_topics:
                 inp.current_topic = topic.topic_name
                 inp.current_source = topic.source
-                source_array = topic.source.split(".")
                 val = json.loads(message)
-                for v in source_array:
+                for v in topic.source_array:
                     val = val[v]
                 inp.current_value = val
 

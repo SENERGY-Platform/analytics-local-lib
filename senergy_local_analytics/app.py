@@ -17,15 +17,12 @@ import queue
 import typing
 import uuid
 from concurrent.futures.thread import ThreadPoolExecutor
-from time import sleep
 
-import jsonpath_rw_ext as jp
 import paho.mqtt.client as mqtt
 
 from senergy_local_analytics import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config, Output, \
     Message
 from senergy_local_analytics.util import InternalJSONEncoder
-from senergy_local_analytics.worker import Worker
 
 
 class App:
@@ -54,7 +51,7 @@ class App:
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)
         self._client.loop_start()
-        with ThreadPoolExecutor(max_workers=6) as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
             while True:
                 message: Message = self.__msg_queue.get()
                 future = executor.submit(self.__parse_and_process_message, message)
@@ -104,7 +101,11 @@ class App:
             for topic in return_topics:
                 inp.current_topic = topic.topic_name
                 inp.current_source = topic.source
-                inp.current_value = jp.match1("$." + topic.source, json.loads(message))
+                source_array = topic.source.split(".")
+                val = json.loads(message)
+                for v in source_array:
+                    val = val[v]
+                inp.current_value = val
 
     def __actually_process_message(self):
         output = self._process_message(self._inputs)

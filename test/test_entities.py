@@ -66,5 +66,9 @@ class TestMainMethods(unittest.TestCase):
         app = App('./data/config-6.json')
         self.assertEqual("testValue", app.get_config_value("test"))
 
+    def test_operator_config_default(self):
+        app = App('./data/config-5.json')
+        self.assertEqual("default", app.get_config_value("test", "default"))
+
     def __process(self, inputs: typing.List[Input]):
         return Output(False, {"sum": 3})

@@ -43,8 +43,11 @@ class App:
         self._client.on_connect = self.__on_connect
         self._client.on_message = self.__on_message
 
-    def get_config_value(self, name: str):
-        return self._operator_config[name]
+    def get_config_value(self, name: str, default="default"):
+        if self._operator_config is not None and name in self._operator_config:
+            return self._operator_config[name]
+        else:
+            return default
 
     def __load_configs(self, config_path='config.json'):
         try:
@@ -63,7 +66,7 @@ class App:
         if os.getenv("INPUT") is not None:
             self._topics = json.loads(os.getenv("INPUT"), object_hook=topic_decoder)
         if os.getenv("OPERATOR_CONFIG") is not None:
-            self._operator_config = json.loads(os.getenv("OPERATOR_CONFIG"), object_hook=operator_config_decoder)
+            self._operator_config = json.loads(os.getenv("OPERATOR_CONFIG"))
 
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)

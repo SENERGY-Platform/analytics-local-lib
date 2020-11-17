@@ -1,0 +1,49 @@
+{
+	"imageId": "asdasdasd",
+	"agent": {
+		"id": "c9b86746-b30e-4a93-9ddc-df86c0faa974",
+		"updated": "0001-01-01T00:00:00Z"
+	},
+	"operatorConfig": {
+		"test": "testValue"
+	},
+	"containerId": "3asdas9f48f0bb3de6167ff443b5e",
+	"inputTopics": [
+		{
+			"filterType": "DeviceId",
+			"mappings": [
+				{
+					"dest": "value1"
+				},
+				{
+					"dest": "value3"
+				},
+				{
+					"dest": "value4"
+				},
+				{
+					"dest": "value5"
+				}
+			]
+		},
+		{
+			"name": "easdasurements",
+			"filterType": "DeviceId",
+			"filterValue": "urasdasda01e2",
+			"mappings": [
+				{
+					"dest": "value2",
+					"source": "OBIS_16_7.value"
+				}
+			]
+		}
+	],
+	"config": {
+		"pipelineId": "fd33961f-b8a4-4b93-bd0c-49ce09267190",
+		"outputTopic": "adder-local",
+		"operatorId": "e0962ead-dc3a-4b27-b052-0312e0350618",
+		"baseOperatorId": "5fa2880ccde9ebc8d3928e0a"
+	},
+	"response": "OK",
+	"responseMessage": "All good"
+}

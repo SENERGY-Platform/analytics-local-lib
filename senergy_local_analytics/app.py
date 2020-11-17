@@ -32,21 +32,38 @@ class App:
     def __init__(self, config_path='config.json'):
         self.__msg_queue = queue.Queue()
         self._client = mqtt.Client(client_id=str(uuid.uuid4()))
-        if os.getenv("CONFIG") is not None:
-            self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
-        else:
-            with open(config_path) as json_file:
-                data = json.load(json_file)
-                self._config: Config = json.loads(json.dumps(data["config"]), object_hook=config_decoder)
-        if os.getenv("INPUT") is not None:
-            self._topics = json.loads(os.getenv("INPUT"), object_hook=topic_decoder)
-        else:
-            with open(config_path) as json_file:
-                data = json.load(json_file)
-                self._topics = json.loads(json.dumps(data["inputTopics"]), object_hook=topic_decoder)
+        self._config: Config = None
+        self._topics = None
+        self._operator_config = None
+        self.__load_configs(config_path)
+        if self._config is None:
+            print("No valid config found")
+            exit(1)
         self._output_message = OutputMessage(self._config.pipeline_id, self._config.operator_id)
         self._client.on_connect = self.__on_connect
         self._client.on_message = self.__on_message
+
+    def get_config_value(self, name: str):
+        return self._operator_config[name]
+
+    def __load_configs(self, config_path='config.json'):
+        try:
+            with open(config_path) as json_file:
+                data = json.load(json_file)
+                if "config" in data:
+                    self._config: Config = json.loads(json.dumps(data["config"]), object_hook=config_decoder)
+                if "inputTopics" in data:
+                    self._topics = json.loads(json.dumps(data["inputTopics"]), object_hook=topic_decoder)
+                if "operatorConfig" in data:
+                    self._operator_config = json.loads(json.dumps(data["operatorConfig"]))
+        except FileNotFoundError as err:
+            print("Config File not found:" + err.filename)
+        if os.getenv("CONFIG") is not None:
+            self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
+        if os.getenv("INPUT") is not None:
+            self._topics = json.loads(os.getenv("INPUT"), object_hook=topic_decoder)
+        if os.getenv("OPERATOR_CONFIG") is not None:
+            self._operator_config = json.loads(os.getenv("OPERATOR_CONFIG"), object_hook=operator_config_decoder)
 
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)

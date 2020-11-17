@@ -62,5 +62,9 @@ class TestMainMethods(unittest.TestCase):
         tops = app._App__create_topic_subscription_list()
         self.assertEqual(1, len(tops))
 
+    def test_operator_config(self):
+        app = App('./data/config-6.json')
+        self.assertEqual("testValue", app.get_config_value("test"))
+
     def __process(self, inputs: typing.List[Input]):
         return Output(False, {"sum": 3})

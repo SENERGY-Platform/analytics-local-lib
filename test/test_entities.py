@@ -14,7 +14,8 @@
 import json
 import typing
 import unittest
-from senergy_local_analytics import Config, config_decoder, OutputMessage, App, Input, Output, InputTopic, topic_decoder
+from senergy_local_analytics import Config, operator_config_decoder, OutputMessage, App, Input, Output, InputTopic, \
+    topic_decoder, OperatorConfig
 
 
 class TestMainMethods(unittest.TestCase):
@@ -22,7 +23,7 @@ class TestMainMethods(unittest.TestCase):
     def test_config_decoder(self):
         with open('./data/config-1.json') as json_file:
             data_in = json.load(json_file)
-        config: Config = json.loads(json.dumps(data_in), object_hook=config_decoder)
+        config: OperatorConfig = json.loads(json.dumps(data_in), object_hook=operator_config_decoder)
         message = OutputMessage(config.pipeline_id, config.operator_id)
         self.assertEqual("d26eabc6-419b-4c98-965a-66dec914746a", message._operator_id)
 
@@ -68,7 +69,7 @@ class TestMainMethods(unittest.TestCase):
 
     def test_operator_config_default(self):
         app = App('./data/config-5.json')
-        self.assertEqual("default", app.get_config_value("test", "default"))
+        self.assertEqual("default", app._config.get_config_value("test", "default"))
 
     def __process(self, inputs: typing.List[Input]):
         return Output(False, {"sum": 3})

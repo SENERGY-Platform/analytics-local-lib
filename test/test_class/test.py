@@ -15,7 +15,7 @@ import typing
 import uuid
 from datetime import datetime
 
-from senergy_local_analytics import App, Input, Output
+from senergy_local_analytics import App, Input, Output, Config
 
 
 class Adder:
@@ -31,14 +31,18 @@ class Adder:
                 self.values[inp.current_topic] = inp.current_value
         self.message_no = self.message_no + 1
         value_sum = sum(self.values.values())
-        if self.sum_total != value_sum:
-            self.sum_total = value_sum
-            return Output(True, {"sum": sum(self.values.values()), "message_no": self.message_no,
-                                 "message_id": str(uuid.uuid4()),
-                                 "timestamp": '{}Z'.format(datetime.utcnow().isoformat())})
+        if "True" == "True":
+            if self.sum_total != value_sum:
+                self.sum_total = value_sum
+                return Output(True, {"sum": sum(self.values.values()), "message_no": self.message_no,
+                                     "message_id": str(uuid.uuid4()),
+                                     "timestamp": '{}Z'.format(datetime.utcnow().isoformat())})
+            else:
+                return Output(False, {"sum": sum(self.values.values()), "message_id": str(uuid.uuid4()),
+                                      "timestamp": '{}Z'.format(datetime.utcnow().isoformat())})
         else:
-            return Output(False, {"sum": sum(self.values.values()), "message_id": str(uuid.uuid4()),
-                                  "timestamp": '{}Z'.format(datetime.utcnow().isoformat())})
+            return Output(True, {"sum": sum(self.values.values()), "message_id": str(uuid.uuid4()),
+                                 "timestamp": '{}Z'.format(datetime.utcnow().isoformat())})
 
 
 if __name__ == '__main__':

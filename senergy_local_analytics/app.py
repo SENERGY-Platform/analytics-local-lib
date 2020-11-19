@@ -20,8 +20,9 @@ from concurrent.futures.thread import ThreadPoolExecutor
 
 import paho.mqtt.client as mqtt
 
-from senergy_local_analytics import config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config, Output, \
-    Message
+from senergy_local_analytics import operator_config_decoder, topic_decoder, Input, InputTopic, OutputMessage, Config, \
+    Output, \
+    Message, OperatorConfig
 from senergy_local_analytics.util import InternalJSONEncoder
 
 
@@ -32,41 +33,35 @@ class App:
     def __init__(self, config_path='config.json'):
         self.__msg_queue = queue.Queue()
         self._client = mqtt.Client(client_id=str(uuid.uuid4()))
-        self._config: Config = None
+        self._operator_config: OperatorConfig
         self._topics = None
-        self._operator_config = None
+        self._config: Config = Config()
         self.__load_configs(config_path)
-        if self._config is None:
+        if self._operator_config is None:
             print("No valid config found")
             exit(1)
-        self._output_message = OutputMessage(self._config.pipeline_id, self._config.operator_id)
+        self._output_message = OutputMessage(self._operator_config.pipeline_id, self._operator_config.operator_id)
         self._client.on_connect = self.__on_connect
         self._client.on_message = self.__on_message
-
-    def get_config_value(self, name: str, default="default"):
-        if self._operator_config is not None and name in self._operator_config:
-            return self._operator_config[name]
-        else:
-            return default
 
     def __load_configs(self, config_path='config.json'):
         try:
             with open(config_path) as json_file:
                 data = json.load(json_file)
                 if "config" in data:
-                    self._config: Config = json.loads(json.dumps(data["config"]), object_hook=config_decoder)
+                    self._operator_config = json.loads(json.dumps(data["config"]), object_hook=operator_config_decoder)
                 if "inputTopics" in data:
                     self._topics = json.loads(json.dumps(data["inputTopics"]), object_hook=topic_decoder)
                 if "operatorConfig" in data:
-                    self._operator_config = json.loads(json.dumps(data["operatorConfig"]))
+                    self._config.set_fields(json.loads(json.dumps(data["operatorConfig"])))
         except FileNotFoundError as err:
             print("Config File not found:" + err.filename)
         if os.getenv("CONFIG") is not None:
-            self._config: Config = json.loads(os.getenv("CONFIG"), object_hook=config_decoder)
+            self._operator_config = json.loads(os.getenv("CONFIG"), object_hook=operator_config_decoder)
         if os.getenv("INPUT") is not None:
             self._topics = json.loads(os.getenv("INPUT"), object_hook=topic_decoder)
         if os.getenv("OPERATOR_CONFIG") is not None:
-            self._operator_config = json.loads(os.getenv("OPERATOR_CONFIG"))
+            self._config.set_fields(json.loads(os.getenv("OPERATOR_CONFIG")))
 
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)
@@ -96,7 +91,8 @@ class App:
                             inp.add_input_topic(InputTopic(topic.name, source))
         self._inputs = inputs
 
-    def process_message(self, func: typing.Callable[[typing.List[Input]], Output]) -> None:
+    def process_message(self, func: typing.Union[typing.Callable[[typing.List[Input], Config], Output],
+                                                 typing.Callable[[typing.List[Input]], Output]]) -> None:
         if callable(func):
             self._process_message = func
 
@@ -127,7 +123,10 @@ class App:
                 inp.current_value = val
 
     def __actually_process_message(self):
-        output = self._process_message(self._inputs)
+        try:
+            output = self._process_message(self._inputs, self._config)
+        except TypeError:
+            output = self._process_message(self._inputs)
         for output_name, value in output.values.items():
             self._output_message.set_output(output_name, value)
         if output.send:
@@ -136,6 +135,6 @@ class App:
     def __send_message(self):
         self._output_message.set_time_now()
         payload = self._output_message
-        self._client.publish("fog/analytics/" + self._config.output_topic +
-                             "/" + self._config.operator_id + "/" + self._config.pipeline_id,
+        self._client.publish("fog/analytics/" + self._operator_config.output_topic +
+                             "/" + self._operator_config.operator_id + "/" + self._operator_config.pipeline_id,
                              payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)

@@ -5,6 +5,9 @@
 		"updated": "0001-01-01T00:00:00Z"
 	},
 	"containerId": "c25e2c502cf4fda65d07772861d39730997ce5f9c1c2bd777f04880552d506e8",
+	"operatorConfig": {
+		"filter": "False"
+	},
 	"inputTopics": [
 		{
 			"name": "event/qM7HdoThKwawa7fkakJTNg-1244648/getMeasurements",

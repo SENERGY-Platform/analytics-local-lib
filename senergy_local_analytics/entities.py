@@ -17,7 +17,7 @@ from collections import namedtuple
 from typing import List
 
 
-class Config:
+class OperatorConfig:
     def __init__(self, pipeline_id, output_topic, operator_id, base_operator_id):
         self.pipeline_id, self.output_topic, self.operator_id, self.base_operator_id = \
             pipeline_id, output_topic, operator_id, base_operator_id
@@ -47,6 +47,20 @@ class Message:
 
     def get_topic(self):
         return self.__topic
+
+
+class Config:
+    def __init__(self):
+        self.__fields = {}
+
+    def set_fields(self, fields):
+        self.__fields = fields
+
+    def get_config_value(self, name: str, default="default"):
+        if self.__fields is not None and name in self.__fields:
+            return self.__fields[name]
+        else:
+            return default
 
 
 class Input:
@@ -95,7 +109,7 @@ class OutputMessage:
         self._time = '{}Z'.format(datetime.datetime.utcnow().isoformat())
 
 
-def config_decoder(configDict):
+def operator_config_decoder(configDict):
     if "operatorId" in configDict:
         configDict["operator_id"] = configDict.pop("operatorId")
     if "pipelineId" in configDict:

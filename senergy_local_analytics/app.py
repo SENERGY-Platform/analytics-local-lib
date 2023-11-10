@@ -114,7 +114,7 @@ class App:
         for topic_config in self._topics:
             if hasattr(topic_config, 'name'):
                 tops.append((topic_config.name, 0))
-                print("Topic Config: " + topic_config, flush=True)
+                print(topic_config, flush=True)
         return tops
 
     def __on_message(self, client, userdata, msg: mqtt.MQTTMessage):

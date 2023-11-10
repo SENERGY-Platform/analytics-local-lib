@@ -118,6 +118,7 @@ class App:
         return tops
 
     def __on_message(self, client, userdata, msg: mqtt.MQTTMessage):
+        print("Received message: " + msg.payload.decode('utf8'))
         self.__msg_queue.put_nowait(Message(msg.topic, msg.payload))
 
     def __get_input_values(self, message, topic_name: str):

@@ -56,12 +56,21 @@ class App:
                     self._config.set_fields(json.loads(json.dumps(data["operatorConfig"])))
         except FileNotFoundError as err:
             print("Config File not found:" + err.filename)
-        if os.getenv("CONFIG") is not None:
-            self._operator_config = json.loads(os.getenv("CONFIG"), object_hook=operator_config_decoder)
-        if os.getenv("INPUT") is not None:
-            self._topics = json.loads(os.getenv("INPUT"), object_hook=topic_decoder)
-        if os.getenv("OPERATOR_CONFIG") is not None:
-            self._config.set_fields(json.loads(os.getenv("OPERATOR_CONFIG")))
+        
+        config = os.getenv("CONFIG")
+        if config is not None:
+            print("Config: " + config)
+            self._operator_config = json.loads(config, object_hook=operator_config_decoder)
+        
+        inputConf = os.getenv("INPUT")
+        if inputConf is not None:
+            print("Input: " + inputConf)
+            self._topics = json.loads(inputConf, object_hook=topic_decoder)
+        
+        operator_config = os.getenv("OPERATOR_CONFIG")
+        if operator_config is not None:
+            print("Operator Config: " + operator_config)
+            self._config.set_fields(json.loads(operator_config))
 
     def main(self) -> None:
         self._client.connect(os.getenv("BROKER_HOST", "localhost"), int(os.getenv("BROKER_PORT", 1883)), 60)
@@ -105,7 +114,7 @@ class App:
         for topic_config in self._topics:
             if hasattr(topic_config, 'name'):
                 tops.append((topic_config.name, 0))
-                print(topic_config, flush=True)
+                print("Topic Config: " + topic_config, flush=True)
         return tops
 
     def __on_message(self, client, userdata, msg: mqtt.MQTTMessage):
@@ -135,6 +144,4 @@ class App:
     def __send_message(self):
         self._output_message.set_time_now()
         payload = self._output_message
-        self._client.publish("fog/analytics/" + self._operator_config.output_topic +
-                             "/" + self._operator_config.operator_id + "/" + self._operator_config.pipeline_id,
-                             payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
+        self._client.publish(self._operator_config.output_topic, payload=json.dumps(payload, cls=InternalJSONEncoder), qos=0, retain=False)
